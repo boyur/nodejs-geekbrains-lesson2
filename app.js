@@ -64,15 +64,20 @@ function readLog() {
 
       log.count = list.length - 1;
 
-      for (var i = 0; i < log.count; i++) {
-        if (list[i] == '1') {
-          log.win += 1;
-        } else {
-          log.loss += 1;
-        }
+      if (log.count == -1) {
+        log.count = 0;
       }
 
-      console.log('\nКоличество партий: ' + (list.length - 1));
+      for (var i = 0; i < log.count; i++) {
+        if (list[i] == '1') {
+          log.win++;
+        } else {
+          log.loss++;
+
+          }
+        }
+
+      console.log('\nКоличество партий: ' + log.count);
       console.log('Выйграл: ' + log.win);
       console.log('Проиграл: ' + log.loss);
     });

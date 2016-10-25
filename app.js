@@ -28,7 +28,7 @@ var recursiveAsyncReadLine = function () {
     if (answer == 1 || answer == 2) {
       if (random == answer) {
         console.log('Вы выйграли\n');
-        fs.appendFile('game.log', '2\n'); // Добавляем в логи
+        fs.appendFile('game.log', '0\n'); // Добавляем в логи
       } else {
         console.log('Вы проиграли\n');
         fs.appendFile('game.log', '1\n'); // Добавляем в логи
@@ -69,29 +69,42 @@ function readLog() {
       }
 
       for (var i = 0; i < log.count; i++) {
-        if (list[i] == '2') {
-          log.win++;
-        } else if(list[i] == '1') {
+        if (list[i] == '0') {
           log.loss++;
+        } else if(list[i] == '1') {
+          log.win++;
         }
       }
 
-      var max = findMaxChain(list);
+      var maxwin = findMaxChain(list, '1');
+      var maxloss = findMaxChain(list, '0');
 
       console.log('\nКоличество партий: ' + log.count);
       console.log('Выйграл: ' + log.win);
       console.log('Проиграл: ' + log.loss);
-      console.log('Максимальное кол-во партий: ' + max.length)
+      console.log('Максимальное кол-во выйгрышных партий в подряд: ' + maxwin.length)
+      console.log('Максимальное кол-во проигршей в подряд: ' + maxloss.length)
     });
 }
 
-function findMaxChain(arr) {
+function findMaxChain(arr, value) {
 
   // Максимальная цепочка
   var max = {};
   max.element = arr[0];
   max.length = 1;
   max.index = 0;
+
+
+  var maxwin = {};
+  maxwin.element = arr[0];
+  maxwin.length = 1;
+  maxwin.index = 0;
+
+  var maxloss = {};
+  maxloss.element = arr[0];
+  maxloss.length = 1;
+  maxloss.index = 0;
 
   // Текущая цепочка
   var current = {};
@@ -114,8 +127,24 @@ function findMaxChain(arr) {
     }
 
     // Цепочка закончилась, она больше максимальной
-    if (current.length > max.length) {
-      max = current;
+    if (current.length > maxloss.length && arr[i] == '1') {
+      //max = current;
+
+      for (var key in current) {
+        maxloss[key] = current[key];
+      }
+
+      console.log('max = current: ', max);
+    }
+
+    // Цепочка закончилась, она больше максимальной
+    if (current.length > maxwin.length && arr[i] == '0') {
+      //max = current;
+
+      for (var key in current) {
+        maxwin[key] = current[key];
+      }
+
       console.log('max = current: ', max);
     }
 
@@ -132,12 +161,26 @@ function findMaxChain(arr) {
   console.log('max final: ', max);
 
   // Если последняя цепочка максимальная
-  if (current.length > max.length) {
+  if (current.length > maxloss.length  && arr[i] == '1') {
     console.log('Последняя цепочка');
-    max = current;
+    for (var key in current) {
+      maxloss[key] = current[key];
+    }
   }
 
-  console.log('max final: ', max);
+  if (current.length > maxwin.length  && arr[i] == '0') {
+    console.log('Последняя цепочка');
+    for (var key in current) {
+      maxwin[key] = current[key];
+    }
+  }
 
-  return max;
+  console.log('max final: ', maxloss);
+
+  if (value == '0') {
+    return maxloss;
+  } else if (value == '1') {
+    return maxwin;
+  }
+
 }

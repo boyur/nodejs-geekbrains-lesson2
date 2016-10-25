@@ -28,10 +28,10 @@ var recursiveAsyncReadLine = function () {
     if (answer == 1 || answer == 2) {
       if (random == answer) {
         console.log('Вы выйграли\n');
-        fs.appendFile('game.log', '1\n'); // Добавляем в логи
+        fs.appendFile('game.log', '2\n'); // Добавляем в логи
       } else {
         console.log('Вы проиграли\n');
-        fs.appendFile('game.log', '0\n'); // Добавляем в логи
+        fs.appendFile('game.log', '1\n'); // Добавляем в логи
       }
     } else {
       console.log('Вы ввели не верное значение');
@@ -69,16 +69,75 @@ function readLog() {
       }
 
       for (var i = 0; i < log.count; i++) {
-        if (list[i] == '1') {
+        if (list[i] == '2') {
           log.win++;
-        } else {
+        } else if(list[i] == '1') {
           log.loss++;
-
-          }
         }
+      }
+
+      var max = findMaxChain(list);
 
       console.log('\nКоличество партий: ' + log.count);
       console.log('Выйграл: ' + log.win);
       console.log('Проиграл: ' + log.loss);
+      console.log('Максимальное кол-во партий: ' + max.length)
     });
+}
+
+function findMaxChain(arr) {
+
+  // Максимальная цепочка
+  var max = {};
+  max.element = arr[0];
+  max.length = 1;
+  max.index = 0;
+
+  // Текущая цепочка
+  var current = {};
+  current.element = arr[0];
+  current.length = 1;
+  current.index = 1;
+
+  for (var i = 1; i < arr.length - 1; i++) {
+
+    console.log('max: ', max);
+
+    console.log('current: ', current);
+    console.log('index: ', i);
+
+    //Цепочка не закончилась
+    if (arr[i] == current.element) {
+      current.length++;
+      console.log('Элементы одинаковые, кол-во:', current.length);
+      continue;
+    }
+
+    // Цепочка закончилась, она больше максимальной
+    if (current.length > max.length) {
+      max = current;
+      console.log('max = current: ', max);
+    }
+
+    console.log('max: ', max);
+
+    // Новая цепочка
+    current.element = arr[i];
+    current.length = 1;
+    current.index = i;
+
+    console.log('max: ', max);
+  }
+
+  console.log('max final: ', max);
+
+  // Если последняя цепочка максимальная
+  if (current.length > max.length) {
+    console.log('Последняя цепочка');
+    max = current;
+  }
+
+  console.log('max final: ', max);
+
+  return max;
 }
